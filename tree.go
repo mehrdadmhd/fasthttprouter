@@ -195,7 +195,7 @@ func (n *node) addRoute(path string, handle fasthttp.RequestHandler) {
 
 			} else if i == len(path) { // Make node a (in-path) leaf
 				if n.handle != nil {
-					panic("a handle is already registered for path '" + fullPath + "'")
+					//panic("a handle is already registered for path '" + fullPath + "'")
 				}
 				n.handle = handle
 			}
