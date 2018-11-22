@@ -42,6 +42,7 @@ const (
 )
 
 type node struct {
+	id        int
 	path      string
 	wildChild bool
 	nType     nodeType
@@ -80,7 +81,7 @@ func (n *node) incrementChildPrio(pos int) int {
 
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
-func (n *node) addRoute(path string, handle fasthttp.RequestHandler) {
+func (n *node) addRoute(id int, path string, handle fasthttp.RequestHandler) {
 	fullPath := path
 	n.priority++
 	numParams := countParams(path)
@@ -111,6 +112,7 @@ func (n *node) addRoute(path string, handle fasthttp.RequestHandler) {
 					nType:     static,
 					indices:   n.indices,
 					children:  n.children,
+					id:        id,
 					handle:    n.handle,
 					priority:  n.priority - 1,
 				}
@@ -190,7 +192,7 @@ func (n *node) addRoute(path string, handle fasthttp.RequestHandler) {
 					n.incrementChildPrio(len(n.indices) - 1)
 					n = child
 				}
-				n.insertChild(numParams, path, fullPath, handle)
+				n.insertChild(id, numParams, path, fullPath, handle)
 				return
 
 			} else if i == len(path) { // Make node a (in-path) leaf
@@ -202,12 +204,12 @@ func (n *node) addRoute(path string, handle fasthttp.RequestHandler) {
 			return
 		}
 	} else { // Empty tree
-		n.insertChild(numParams, path, fullPath, handle)
+		n.insertChild(id, numParams, path, fullPath, handle)
 		n.nType = root
 	}
 }
 
-func (n *node) insertChild(numParams uint8, path, fullPath string, handle fasthttp.RequestHandler) {
+func (n *node) insertChild(id int, numParams uint8, path, fullPath string, handle fasthttp.RequestHandler) {
 	var offset int // already handled bytes of the path
 
 	// find prefix until first wildcard (beginning with ':'' or '*'')
@@ -317,6 +319,7 @@ func (n *node) insertChild(numParams uint8, path, fullPath string, handle fastht
 
 	// insert remaining path part and handle to the leaf
 	n.path = path[offset:]
+	n.id = id
 	n.handle = handle
 }
 
@@ -325,7 +328,7 @@ func (n *node) insertChild(numParams uint8, path, fullPath string, handle fastht
 // If no handle can be found, a TSR (trailing slash redirect) recommendation is
 // made if a handle exists with an extra (without the) trailing slash for the
 // given path.
-func (n *node) getValue(path string, ctx *fasthttp.RequestCtx) (handle fasthttp.RequestHandler, tsr bool) {
+func (n *node) getValue(path string, ctx *fasthttp.RequestCtx) (handle fasthttp.RequestHandler, tsr bool, id int) {
 walk: // outer loop for walking the tree
 	for {
 		if len(path) > len(n.path) {
