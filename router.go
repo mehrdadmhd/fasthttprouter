@@ -242,11 +242,11 @@ func (r *Router) recv(ctx *fasthttp.RequestCtx) {
 // If the path was found, it returns the handle function and the path parameter
 // values. Otherwise the third return value indicates whether a redirection to
 // the same path with an extra / without the trailing slash should be performed.
-func (r *Router) Lookup(method, path string, ctx *fasthttp.RequestCtx) (fasthttp.RequestHandler, bool) {
+func (r *Router) Lookup(method, path string, ctx *fasthttp.RequestCtx) (fasthttp.RequestHandler, bool, int) {
 	if root := r.trees[method]; root != nil {
 		return root.getValue(path, ctx)
 	}
-	return nil, false
+	return nil, false, 0
 }
 
 func (r *Router) allowed(path, reqMethod string) (allow string) {
@@ -270,7 +270,7 @@ func (r *Router) allowed(path, reqMethod string) (allow string) {
 				continue
 			}
 
-			handle, _ := r.trees[method].getValue(path, nil)
+			handle, _, _ := r.trees[method].getValue(path, nil)
 			if handle != nil {
 				// add request method to list of allowed methods
 				if len(allow) == 0 {
@@ -296,8 +296,8 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 	method := string(ctx.Method())
 	if root := r.trees[method]; root != nil {
-		if f, tsr := root.getValue(path, ctx); f != nil {
-			ctx.Request.Header.Set("X-Method-Id", )
+		if f, tsr, id := root.getValue(path, ctx); f != nil {
+			ctx.SetUserValue("id", id)
 			f(ctx)
 			return
 		} else if method != "CONNECT" && path != "/" {
