@@ -383,6 +383,7 @@ walk: // outer loop for walking the tree
 					}
 
 					if handle = n.handle; handle != nil {
+						id = n.id
 						return
 					} else if len(n.children) == 1 {
 						// No handle found. Check if a handle for this path + a
@@ -399,6 +400,7 @@ walk: // outer loop for walking the tree
 						ctx.SetUserValue(n.path[2:], path)
 					}
 					handle = n.handle
+					id = n.id
 					return
 
 				default:
@@ -409,6 +411,7 @@ walk: // outer loop for walking the tree
 			// We should have reached the node containing the handle.
 			// Check if this node has a handle registered.
 			if handle = n.handle; handle != nil {
+				id = n.id
 				return
 			}
 
