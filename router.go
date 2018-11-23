@@ -297,7 +297,7 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	method := string(ctx.Method())
 	if root := r.trees[method]; root != nil {
 		if f, tsr, id := root.getValue(path, ctx); f != nil {
-			ctx.SetUserValue("id", id)
+			ctx.SetUserValue("x-id", id)
 			f(ctx)
 			return
 		} else if method != "CONNECT" && path != "/" {
