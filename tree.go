@@ -300,6 +300,7 @@ func (n *node) insertChild(id int, numParams uint8, path, fullPath string, handl
 			}
 			n.children = []*node{child}
 			n.indices = string(path[i])
+			n.id = id
 			n = child
 			n.priority++
 
