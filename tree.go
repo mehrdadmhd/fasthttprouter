@@ -35,7 +35,7 @@ func countParams(path string) uint8 {
 type nodeType uint8
 
 const (
-	static nodeType = iota // default
+	static   nodeType = iota // default
 	root
 	param
 	catchAll
@@ -148,7 +148,7 @@ func (n *node) addRoute(id int, path string, handle fasthttp.RequestHandler) {
 
 					// Check if the wildcard matches
 					if len(path) >= len(n.path) && n.path == path[:len(n.path)] &&
-						// Check for longer wildcard, e.g. :name and :names
+					// Check for longer wildcard, e.g. :name and :names
 						(len(n.path) >= len(path) || path[len(n.path)] == '/') {
 						continue walk
 					} else {
@@ -311,6 +311,7 @@ func (n *node) insertChild(id int, numParams uint8, path, fullPath string, handl
 				maxParams: 1,
 				handle:    handle,
 				priority:  1,
+				id:        id,
 			}
 			n.children = []*node{child}
 
