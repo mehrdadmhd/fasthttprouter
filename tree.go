@@ -112,7 +112,7 @@ func (n *node) addRoute(id int, path string, handle fasthttp.RequestHandler) {
 					nType:     static,
 					indices:   n.indices,
 					children:  n.children,
-					id:        id,
+					id:        n.id,
 					handle:    n.handle,
 					priority:  n.priority - 1,
 				}
