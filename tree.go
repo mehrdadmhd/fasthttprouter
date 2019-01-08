@@ -200,6 +200,7 @@ func (n *node) addRoute(id int, path string, handle fasthttp.RequestHandler) {
 					//panic("a handle is already registered for path '" + fullPath + "'")
 				}
 				n.handle = handle
+				n.id = id
 			}
 			return
 		}
