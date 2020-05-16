@@ -292,6 +292,8 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	if r.PanicHandler != nil {
 		defer r.recv(ctx)
 	}
+	
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 
 	path := string(ctx.Path())
 	method := string(ctx.Method())
