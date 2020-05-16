@@ -294,6 +294,9 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	}
 	
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+	ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
+	ctx.Response.Header.Set("Access-Control-Allow-Methods", "*")
+	ctx.Response.Header.Set("Access-Control-Allow-Headers", "*")
 
 	path := string(ctx.Path())
 	method := string(ctx.Method())
